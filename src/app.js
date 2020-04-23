@@ -80,6 +80,17 @@ app.get('/posts', (request, response) => {
 	response.json(posts);
 });
 
+app.get('/posts/search', (request, response) => {
+	const findPostIndex = posts.findIndex((p) => +p.id === +request.query.id);
+
+	if (findPostIndex === -1) {
+		response.status(401).json({ status: false, message: 'Post not found' });
+		return;
+	}
+
+	response.json({ post: posts[findPostIndex] });
+});
+
 app.post('/posts', (request, response) => {
 	posts.push(request.body);
 
@@ -97,6 +108,19 @@ app.put('/posts', (request, response) => {
 	posts[index].content = request.body.content;
 
 	response.json({ status: true, post: posts[index] });
+});
+
+app.delete('/posts', (request, response) => {
+	const findPostIndex = posts.findIndex((p) => +p.id === +request.query.id);
+
+	if (findPostIndex === -1) {
+		response.status(401).json({ status: false, message: 'Post not found' });
+		return;
+	}
+
+	const deletePost = posts.splice(findPostIndex, 1);
+
+	response.json({ deletePost, message: 'Post succesfully deleted' });
 });
 
 app.use('*', (request, response) => {
