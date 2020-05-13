@@ -1,21 +1,25 @@
 import posts from '../models/Post';
+import TryCatch from '../decorators/TryCatchMiddlewareDecorator';
+import HttpError from '../exeptions/HttpError';
 
 class PostsController {
+	@TryCatch
 	static async read(req, res) {
 		const index = posts.findIndex((p) => +p.id === +req.params.id);
 
 		if (index === -1) {
-			res.status(404).json({ status: false, message: 'Post not found' });
-			return;
+			throw new HttpError('Post not found', 404);
 		}
 
 		res.json({ post: posts[index] });
 	}
 
+	@TryCatch
 	static async list(req, res) {
 		res.json(posts);
 	}
 
+	@TryCatch
 	static async create(req, res) {
 		const nextid = Math.max(...posts.map((post) => post.id), 0) + 1;
 		req.body.id = nextid;
@@ -23,11 +27,12 @@ class PostsController {
 		res.json({ status: true, post: req.body });
 	}
 
+	@TryCatch
 	static async update(req, res) {
 		const index = posts.findIndex((p) => +p.id === +req.params.id);
 
 		if (index === -1) {
-			res.status(401).json({ status: false, message: 'Post not found' });
+			throw new HttpError('Post not found', 404);
 		}
 
 		posts[index].header = req.body.header;
@@ -36,12 +41,12 @@ class PostsController {
 		res.json({ status: true, post: posts[index] });
 	}
 
+	@TryCatch
 	static async delete(req, res) {
 		const findPostIndex = posts.findIndex((p) => +p.id === +req.params.id);
 
 		if (findPostIndex === -1) {
-			res.status(401).json({ status: false, message: `Post with ${+req.params.id} not found` });
-			return;
+			throw new HttpError(`Post with ${+req.params.id} not found`, 404);
 		}
 
 		const deletePost = posts.splice(findPostIndex, 1);

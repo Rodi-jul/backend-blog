@@ -20,5 +20,6 @@
         "indent": ["error", "tab"],
         "no-tabs": 0,
         "operator-linebreak": [2, "after", { "overrides": {"+": "ignore"} }]
-    }
+    },
+    "parser": "babel-eslint"
 }
